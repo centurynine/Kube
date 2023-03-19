@@ -1,0 +1,38 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-basic-authen
+  namespace: iamapinan
+spec:
+  basicAuth:
+    secret: dashboard-auth-secret
+    removeHeader: true
+---
+apiVersion: v1
+data:
+  users: //4bAFsAOQAwAG0ATgBlAHcAIABwAGEAcwBzAHcAbwByAGQAOgAbAFsAMwA5AG0AIAAbAFsAOQAwAG0AUgBlAC0AdAB5AHAAZQAgAG4AZQB3ACAAcABhAHMAcwB3AG8AcgBkADoAGwBbADMAOQBtACAAYwBlAG4AdAB1AHIAeQBuAGkAbgBlADoAJAAyAGEAJAAwADUAJABVAEgAcAA3AE4ARgByAEoAUQBNAHQARABKAGMASABnAEsARABoAFUAaAAuAGkANAByAFoAUwB6AEEAMwA1AE0AZABnADgAQwBQAGEASwB3AEIAVwBWADIAZwBTAEIAaQA5AGoAMgBHAEsADQAKAA==
+kind: Secret
+metadata:
+  name: dashboard-auth-secret
+  namespace: iamapinan
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: iamapinan
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-basic-authen
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.mydomain.com`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      kind: Rule
+      middlewares:
+        - name: traefik-basic-authen
+          namespace: iamapinan
+      services:
+        - name: api@internal
+          kind: TraefikService

@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: service-ingress
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+  - match: Host(`web.spcn05.local`)
+    kind: Rule
+    services:
+    - name: rancher-service
+      port: 80
