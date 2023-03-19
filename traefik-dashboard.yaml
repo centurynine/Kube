@@ -2,7 +2,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: traefik-basic-authen
-  namespace: iamapinan
+  namespace: spcn05
 spec:
   basicAuth:
     secret: dashboard-auth-secret
@@ -10,17 +10,17 @@ spec:
 ---
 apiVersion: v1
 data:
-  users: //4bAFsAOQAwAG0ATgBlAHcAIABwAGEAcwBzAHcAbwByAGQAOgAbAFsAMwA5AG0AIAAbAFsAOQAwAG0AUgBlAC0AdAB5AHAAZQAgAG4AZQB3ACAAcABhAHMAcwB3AG8AcgBkADoAGwBbADMAOQBtACAAYwBlAG4AdAB1AHIAeQBuAGkAbgBlADoAJAAyAGEAJAAwADUAJABVAEgAcAA3AE4ARgByAEoAUQBNAHQARABKAGMASABnAEsARABoAFUAaAAuAGkANAByAFoAUwB6AEEAMwA1AE0AZABnADgAQwBQAGEASwB3AEIAVwBWADIAZwBTAEIAaQA5AGoAMgBHAEsADQAKAA==
+  users: //4bAFsAOQAwAG0ATgBlAHcAIABwAGEAcwBzAHcAbwByAGQAOgAbAFsAMwA5AG0AIAAbAFsAOQAwAG0AUgBlAC0AdAB5AHAAZQAgAG4AZQB3ACAAcABhAHMAcwB3AG8AcgBkADoAGwBbADMAOQBtACAAYwBlAG4AdAB1AHIAeQBuAGkAbgBlADoAJAAyAGEAJAAwADUAJABFAGEAYQBxADMAawAyAGEAcQBVAHMATAByAHUAawBKAHQAMAA5AGIAZQAuAEgATgBWAGcAaABlAHcAcAB4AGMAWABxAHcAZABoAEoAaQB2AFMAOQAvADgASABLAFEANgBYAG4AMQBRADYADQAKAA==
 kind: Secret
 metadata:
   name: dashboard-auth-secret
-  namespace: iamapinan
+  namespace: spcn05
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: traefik-dashboard
-  namespace: iamapinan
+  namespace: spcn05
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.middlewares: traefik-basic-authen
@@ -28,11 +28,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`traefik.mydomain.com`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+    - match: Host(`traefik.spcn05.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
       middlewares:
         - name: traefik-basic-authen
-          namespace: iamapinan
+          namespace: spcn05
       services:
         - name: api@internal
           kind: TraefikService
